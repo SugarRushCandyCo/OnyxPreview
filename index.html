@@ -17,7 +17,7 @@
             --text-main: #ffffff;
             --text-muted: #888888;
             --accent: #222222;
-            --transition: all 0.3s ease;
+            --transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         * {
@@ -39,28 +39,27 @@
             color: var(--bg-color);
         }
 
-        /* Temporary Pop-up (Toast) Notification */
-        #toast {
+        /* Editor Mode Banner */
+        #editor-banner {
             position: fixed;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%) translateY(-100px);
+            top: 0;
+            left: 0;
+            width: 100%;
             background-color: #ffffff;
             color: #000000;
-            padding: 12px 24px;
-            border-radius: 50px;
-            font-size: 0.9rem;
+            text-align: center;
+            font-size: 0.8rem;
             font-weight: 600;
-            letter-spacing: 0.5px;
+            padding: 8px 0;
+            transform: translateY(-100%);
+            transition: var(--transition);
             z-index: 9999;
-            opacity: 0;
-            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.4s;
-            box-shadow: 0 4px 12px rgba(255, 255, 255, 0.1);
+            letter-spacing: 1px;
+            text-transform: uppercase;
         }
 
-        #toast.show {
-            transform: translateX(-50%) translateY(0);
-            opacity: 1;
+        #editor-banner.active {
+            transform: translateY(0);
         }
 
         /* Navigation */
@@ -185,82 +184,75 @@
             border-top: 1px solid var(--accent);
         }
 
-        /* Active Editor Mode Styles */
-        .editable-active {
-            outline: none !important;
-            transition: all 0.2s;
+        /* Editable Element Styling */
+        [data-editable="true"] {
+            outline: none;
+            transition: background 0.2s;
+        }
+        
+        .editor-mode-active [data-editable="true"]:hover {
+            background: rgba(255, 255, 255, 0.1);
+            cursor: text;
             border-radius: 4px;
         }
 
-        .editable-active:hover {
-            background: rgba(255, 255, 255, 0.1);
-            cursor: text;
-            box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.1);
-        }
-
-        .editable-active:focus {
+        .editor-mode-active [data-editable="true"]:focus {
             background: rgba(255, 255, 255, 0.15);
-            box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.15);
-        }
-        
-        .saving {
-            opacity: 0.5;
-            pointer-events: none;
+            border-bottom: 2px solid #fff;
         }
     </style>
 </head>
 <body>
 
-    <div id="toast">Editor mode enabled</div>
+    <div id="editor-banner">Editor Mode Active — Double-click text to edit — Changes save automatically</div>
 
     <nav>
-        <div class="logo" id="nav-logo">Onyx.</div>
-        <button class="nav-btn" id="nav-cta">Early Access</button>
+        <div class="logo" data-editable="true" id="nav-logo">Onyx.</div>
+        <button class="nav-btn" data-editable="true" id="nav-cta">Early Access</button>
     </nav>
 
     <header class="hero">
-        <h1 id="hero-title">Clarity in <br>every task.</h1>
-        <p id="hero-subtitle">The premium productivity environment designed for deep work. No distractions, just execution.</p>
-        <button class="primary-btn" id="hero-btn">Start your session</button>
+        <h1 data-editable="true" id="hero-title">Clarity in <br>every task.</h1>
+        <p data-editable="true" id="hero-subtitle">The premium productivity environment designed for deep work. No distractions, just execution.</p>
+        <button class="primary-btn" data-editable="true" id="hero-btn">Start your session</button>
     </header>
 
     <section class="features">
         <div class="feature-card">
-            <h3 id="feature-1-title">Absolute Focus</h3>
-            <p id="feature-1-desc">A minimalist interface that strips away the noise, leaving only what matters for your current workflow.</p>
+            <h3 data-editable="true" id="feature-1-title">Absolute Focus</h3>
+            <p data-editable="true" id="feature-1-desc">A minimalist interface that strips away the noise, leaving only what matters for your current workflow.</p>
         </div>
         <div class="feature-card">
-            <h3 id="feature-2-title">Frictionless Entry</h3>
-            <p id="feature-2-desc">Capture thoughts, tasks, and notes at the speed of light. Onyx gets out of your way.</p>
+            <h3 data-editable="true" id="feature-2-title">Frictionless Entry</h3>
+            <p data-editable="true" id="feature-2-desc">Capture thoughts, tasks, and notes at the speed of light. Onyx gets out of your way.</p>
         </div>
         <div class="feature-card">
-            <h3 id="feature-3-title">Secure Sync</h3>
-            <p id="feature-3-desc">Your work is encrypted and instantly available across all your devices, anywhere, anytime.</p>
+            <h3 data-editable="true" id="feature-3-title">Secure Sync</h3>
+            <p data-editable="true" id="feature-3-desc">Your work is encrypted and instantly available across all your devices, anywhere, anytime.</p>
         </div>
     </section>
 
     <footer>
-        <p id="footer-text">© 2026 Onyx Productivity. All rights reserved.</p>
+        <p data-editable="true" id="footer-text">© 2026 Onyx Productivity. All rights reserved.</p>
     </footer>
 
     <script>
         // ==========================================
         // 1. SUPABASE CONFIGURATION
         // ==========================================
+        // REPLACE THESE WITH YOUR ACTUAL SUPABASE URL AND ANON KEY
         const SUPABASE_URL = 'https://zaobnqagrdzqhqlywdmu.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inphb2JucWFncmR6cWhxbHl3ZG11Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMwMjc5NzQsImV4cCI6MjA5ODYwMzk3NH0.EUjq6cWp0vdHw1Paz8KLLST_cTopQYlAuPDKJs-rX14';
         
         const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        // All text elements we want to manage through the DB
-        const textElementsSelector = 'h1, h2, h3, p, .logo, .nav-btn, .primary-btn';
-//
         // ==========================================
         // 2. LOAD CONTENT FROM DATABASE
         // ==========================================
         async function loadContent() {
             try {
                 const { data, error } = await supabase.from('onyx_content').select('*');
+                
                 if (error) throw error;
                 
                 if (data && data.length > 0) {
@@ -270,80 +262,67 @@
                     });
                 }
             } catch (err) {
-                console.warn('Supabase not configured or unreachable yet.');
+                console.warn('Supabase not configured or unreachable yet. Showing default HTML content.');
             }
         }
 
-        // Load data on page load
+        // Load data immediately on page load
         loadContent();
 
         // ==========================================
-        // 3. EDITOR MODE LOGIC 
+        // 3. EDITOR MODE LOGIC (EASTER EGG)
         // ==========================================
         const SECRET_CODE = '03072014';
         let keyBuffer = '';
         let isEditorMode = false;
 
-        // Listen for keyboard input
-        document.addEventListener('keydown', (e) => {
-            if (isEditorMode) return; 
+        // Listen for the secret code sequence
+        window.addEventListener('keydown', (e) => {
+            if (isEditorMode) return; // Stop listening if already active
             
-            // Only capture single characters to prevent shift/meta keys from messing up the buffer
-            if (e.key.length === 1) {
-                keyBuffer += e.key;
-                
-                // Keep buffer the exact length of the secret code
-                if (keyBuffer.length > SECRET_CODE.length) {
-                    keyBuffer = keyBuffer.substring(keyBuffer.length - SECRET_CODE.length);
-                }
+            keyBuffer += e.key;
+            
+            // Keep buffer the same length as secret code
+            if (keyBuffer.length > SECRET_CODE.length) {
+                keyBuffer = keyBuffer.substring(keyBuffer.length - SECRET_CODE.length);
+            }
 
-                if (keyBuffer === SECRET_CODE) {
-                    activateEditorMode();
-                }
+            if (keyBuffer === SECRET_CODE) {
+                activateEditorMode();
             }
         });
 
-        function showToast(message) {
-            const toast = document.getElementById('toast');
-            toast.innerText = message;
-            toast.classList.add('show');
-            
-            // Hide the toast after 3 seconds
-            setTimeout(() => {
-                toast.classList.remove('show');
-            }, 3000);
-        }
-
         function activateEditorMode() {
             isEditorMode = true;
-            showToast("Editor mode enabled");
+            document.body.classList.add('editor-mode-active');
+            document.getElementById('editor-banner').classList.add('active');
             
-            // Select all text elements and make them editable
-            const elementsToEdit = document.querySelectorAll(textElementsSelector);
+            const editableElements = document.querySelectorAll('[data-editable="true"]');
             
-            elementsToEdit.forEach(el => {
-                // Skip elements that don't have an ID (we need IDs to save to Supabase)
-                if (!el.id) return; 
+            editableElements.forEach(el => {
+                // Double click to edit
+                el.addEventListener('dblclick', function(e) {
+                    e.preventDefault();
+                    this.contentEditable = true;
+                    this.focus();
+                });
 
-                // Turn on editing immediately
-                el.contentEditable = true;
-                el.classList.add('editable-active');
-
-                // Prevent Enter key from creating new HTML block elements, force it to exit instead
+                // Prevent Enter key from making new lines, force save instead
                 el.addEventListener('keydown', function(e) {
                     if (e.key === 'Enter') {
                         e.preventDefault();
-                        this.blur(); // Triggers the save
+                        this.blur();
                     }
                 });
 
-                // Auto-save to Supabase when the user clicks out of the text
+                // Save to Supabase when user clicks away
                 el.addEventListener('blur', async function() {
+                    this.contentEditable = false;
                     const newContent = this.innerHTML;
                     const elementId = this.id;
 
-                    // Visual feedback during save
-                    this.classList.add('saving');
+                    // Basic UI feedback for saving
+                    this.style.opacity = '0.5';
 
                     try {
                         const { error } = await supabase
@@ -351,14 +330,13 @@
                             .upsert({ id: elementId, content: newContent });
 
                         if (error) {
-                            console.error('Save error:', error);
-                            showToast("Failed to save. Check console.");
+                            console.error('Error saving to database:', error);
+                            alert('Failed to save. Check Supabase credentials.');
                         }
                     } catch (err) {
-                        console.error('Database error', err);
+                        console.error('Database connection failed', err);
                     } finally {
-                        // Remove visual feedback
-                        this.classList.remove('saving');
+                        this.style.opacity = '1';
                     }
                 });
             });
